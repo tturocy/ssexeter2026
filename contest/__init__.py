@@ -11,7 +11,7 @@ Implementation of contest games with selectable contest success function
 class C(BaseConstants):
     NAME_IN_URL = 'contest'
     PLAYERS_PER_GROUP = 2
-    NUM_ROUNDS = 2
+    NUM_ROUNDS = 1
     NUM_PAID_ROUNDS = 1
     ENDOWMENT = Currency(10)
     COST_PER_TICKET = Currency(0.50)
@@ -115,6 +115,11 @@ class Player(BasePlayer):
     def in_paid_rounds(self):
         return [rd for rd in self.in_all_rounds() if rd.subsession.is_paid]
 
+    def store_payoffs(self):
+        self.participant.vars["earnings_contest"] = (
+            sum(p.payoff for p in self.in_all_rounds())
+        )
+
 
 # PAGES
 class SetupRound(WaitPage):
@@ -165,6 +170,10 @@ class EndBlock(Page):
     @staticmethod
     def is_displayed(player):
         return player.round_number == C.NUM_ROUNDS
+
+    @staticmethod
+    def before_next_page(player, timeout_happened):
+        player.store_payoffs()
 
 
 page_sequence = [

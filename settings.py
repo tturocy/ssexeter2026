@@ -52,9 +52,12 @@ SESSION_CONFIGS = [
     dict(
         name="summary_test",
         app_sequence=[
+            "contest",
             "summary"
         ],
-        num_demo_participants=3,
+        num_demo_participants=2,
+        csf="allpay",
+        contest_endowment=10,
     ),
 ]
 
