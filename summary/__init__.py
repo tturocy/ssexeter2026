@@ -1,5 +1,6 @@
 from otree.api import *
 
+import contest
 
 doc = """
 App to display summary of earnings in experiment
@@ -15,7 +16,9 @@ class C(BaseConstants):
 class Subsession(BaseSubsession):
     def collect_results(self):
         for player in self.get_players():
-            player.earnings_contest = player.participant.vars.get("earnings_contest", Currency(67))
+            player.earnings_contest = sum(
+                p.payoff for p in player.in_contest_rounds()
+            )
             player.earnings_encryption = player.participant.vars.get("earnings_encryption", Currency(67))
 
 
@@ -26,6 +29,9 @@ class Group(BaseGroup):
 class Player(BasePlayer):
     earnings_contest = models.CurrencyField()
     earnings_encryption = models.CurrencyField()
+
+    def in_contest_rounds(self):
+        return contest.Player.objects_filter(participant=self.participant)
 
 
 
